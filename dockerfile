@@ -1,5 +1,17 @@
 FROM ubuntu:latest
 
+# Install SSH server, MySQL Server, and phpMyAdmin dependencies without interactive prompts
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server mysql-server mysql-client apache2 php libapache2-mod-php php-mysql phpmyadmin && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Configure SSH server
+RUN mkdir /var/run/sshd
+RUN echo 'root:your_ssh_password' | chpasswd
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed -i 's/UsePAM yes/UsePAM no/' /etc/ssh/sshd_config
+
 # Install MySQL Server and utilities without interactive prompts
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server mysql-client && \
