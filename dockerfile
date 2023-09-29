@@ -25,6 +25,8 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+RUN echo "\$cfg['Servers'][\$i]['AllowNoPassword'] = true;" >> /etc/phpmyadmin/config.inc.php
+
 # Expose ports
 EXPOSE 3306
 EXPOSE 80
