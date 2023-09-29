@@ -8,4 +8,3 @@ ENV MYSQL_PASSWORD=your_password
 
 EXPOSE 3310
 
-CMD ["mysqld", "--port=3310"]

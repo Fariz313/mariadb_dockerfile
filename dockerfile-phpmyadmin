@@ -1,0 +1,11 @@
+# Gunakan gambar phpMyAdmin yang ada di Docker Hub
+FROM phpmyadmin/phpmyadmin:latest
+
+# Set variabel lingkungan untuk konfigurasi phpMyAdmin
+ENV PMA_HOST=mariadb
+ENV PMA_PORT=3310  # Port yang digunakan oleh MariaDB
+ENV PMA_USER=root  # User MariaDB
+ENV PMA_PASSWORD=CubiconiaJaya  # Password MariaDB
+
+# Expose port 80
+EXPOSE 80
