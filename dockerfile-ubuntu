@@ -9,5 +9,8 @@ RUN  echo 'test:test' | chpasswd
 RUN service ssh start
 
 EXPOSE 22
+EXPOSE 3306
+EXPOSE 80
+EXPOSE 3310
 
 CMD ["/usr/sbin/sshd","-D"]
