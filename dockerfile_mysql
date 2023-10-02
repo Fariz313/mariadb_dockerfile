@@ -1,0 +1,20 @@
+# Use the official MySQL image as the base image
+FROM mysql:latest
+
+# Set the environment variables
+ENV MYSQL_ROOT_PASSWORD=Bismillah3x
+ENV MYSQL_DATABASE=microservices
+ENV MYSQL_USER=micro
+ENV MYSQL_PASSWORD=microPassword
+
+# Expose port 3330
+EXPOSE 3330
+
+# Copy custom MySQL configuration file, if needed
+# COPY my.cnf /etc/mysql/my.cnf
+
+# You can add additional initialization scripts if needed
+# COPY init.sql /docker-entrypoint-initdb.d/
+
+# The CMD instruction specifies the command to run on container startup
+CMD ["mysqld", "--port=3330", "--bind-address=0.0.0.0"]
