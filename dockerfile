@@ -1,17 +1,31 @@
-FROM ubuntu:latest
-
-RUN apt update && apt upgrade -y && apt  install -y php php-tcpdf php-cgi php-pear php-mbstring libapache2-mod-php php-common php-phpseclib php-mysql && apt install mariadb-server && apt -y install apache2 && apt install wget && apt install nano
-
-RUN wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.tar.gz
-RUN tar xvf phpMyAdmin-latest-all-languages.tar.gz
-RUN mv phpMyAdmin-*/ /usr/share/phpmyadmin
-RUN mkdir -p /var/lib/phpmyadmin/tmp
-RUN chown -R www-data:www-data /var/lib/phpmyadmin
-RUN mkdir /etc/phpmyadmin/
-RUN cp /usr/share/phpmyadmin/config.sample.inc.php  /usr/share/phpmyadmin/config.inc.php
-# Expose ports
-EXPOSE 3306
-EXPOSE 80
-
-# CMD to start MySQL and Apache
-CMD service mysql start && service apache2 start && tail -f /var/log/apache2/error.log
+FROM ubuntu:20.04
+RUN apt-get update && apt-get install -y \
+    mariadb-server \
+    phpmyadmin \
+    php-mbstring \
+    php-xml \
+    php-gd \
+    php-curl
+RUN systemctl start mariadb
+RUN mysql -u root -p"" -e "CREATE DATABASE IF NOT EXISTS my_database;"
+RUN mysql -u root -p"" -e "CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';"
+RUN mysql -u root -p"" -e "GRANT ALL PRIVILEGES ON my_database.* TO 'admin'@'localhost';"
+RUN mysql -u root -p"" -e "FLUSH PRIVILEGES;"
+# create config.inc.php
+RUN echo "<?php" > /etc/phpmyadmin/config.inc.php
+RUN echo "$cfg['Servers'][$i]['host'] = 'localhost';" >> /etc/phpmyadmin/config.inc.php
+RUN echo "$cfg['Servers'][$i]['port'] = '3306';" >> /etc/phpmyadmin/config.inc.php
+RUN echo "$cfg['Servers'][$i]['user'] = 'admin';" >> /etc/phpmyadmin/config.inc.php
+RUN echo "$cfg['Servers'][$i]['password'] = 'admin';" >> /etc/phpmyadmin/config.inc.php
+RUN echo "$cfg['Servers'][$i]['database'] = 'my_database';" >> /etc/phpmyadmin/config.inc.php
+RUN echo "?>" >> /etc/phpmyadmin/config.inc.php
+# create .my.cnf
+RUN echo "[client]" > /root/.my.cnf
+RUN echo "user=admin" >> /root/.my.cnf
+RUN echo "password=admin" >> /root/.my.cnf
+# create .bashrc
+RUN echo "export MYSQL_PWD=admin" >> /root/.bashrc
+EXPOSE 80 3306
+CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+CMD ["systemctl", "enable", "mariadb"]
+CMD ["service", "mariadb", "start"]
