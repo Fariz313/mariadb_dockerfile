@@ -1,12 +1,6 @@
 FROM ubuntu:20.04
-RUN apt-get update && apt-get install -y \
-    mariadb-server \
-    phpmyadmin \
-    php-mbstring \
-    php-xml \
-    php-gd \
-    php-curl
-RUN systemctl start mariadb
+RUN apt-get update && apt-get install -y mariadb-server phpmyadmin php-mbstring php-xml php-gd php-curl apache2
+RUN service mariadb start
 RUN mysql -u root -p"" -e "CREATE DATABASE IF NOT EXISTS my_database;"
 RUN mysql -u root -p"" -e "CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';"
 RUN mysql -u root -p"" -e "GRANT ALL PRIVILEGES ON my_database.* TO 'admin'@'localhost';"
@@ -25,7 +19,6 @@ RUN echo "user=admin" >> /root/.my.cnf
 RUN echo "password=admin" >> /root/.my.cnf
 # create .bashrc
 RUN echo "export MYSQL_PWD=admin" >> /root/.bashrc
-EXPOSE 80 3306
+EXPOSE 80 443 3306
 CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
-CMD ["systemctl", "enable", "mariadb"]
-CMD ["service", "mariadb", "start"]
+CMD ["service", "apache2", "start"]
