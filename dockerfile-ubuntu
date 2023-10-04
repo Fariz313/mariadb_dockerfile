@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 RUN apt-get update
-RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
+RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y tzdata -q  icinga2 icinga2-ido-pgsql
 RUN apt-get install -y \
     mariadb-server \
     phpmyadmin \
